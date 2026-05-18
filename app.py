@@ -3,8 +3,15 @@ import streamlit as st
 import json
 import os
 
+from streamlit_autorefresh import st_autorefresh
+
+from notifier import notify_new_ad
+
 # Konfigurera sidan
 st.set_page_config(page_title="Smart Sök Blocket", page_icon="🛡️", layout="wide")
+
+# Auto-refresh every 10s — picks up new ads written by main_scanner.py
+st_autorefresh(interval=10_000, key="scanner_poll")
 
 # ──────────────────────────────────────────────────────────────
 # CSS för Blocket-stil (röd header, kort, badges, knappar)
@@ -180,10 +187,22 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Persistent banner for recently detected new ads (toasts are ephemeral)
+if st.session_state.get("recent_new_ads"):
+    with st.container(border=True):
+        st.markdown("### 🔔 Senast hittade nya annonser")
+        for entry in st.session_state["recent_new_ads"][-5:]:
+            st.markdown(
+                f"- **{entry['heading']}** · {entry['price']} SEK · "
+                f"Trovärdighet: {entry['score']}/10 · "
+                f"[Öppna]({entry['url']})"
+            )
+
 # ──────────────────────────────────────────────────────────────
 # Ladda annonser från JSON
 # ──────────────────────────────────────────────────────────────
 DATA_FILE = "data/live_ads.json"
+
 
 def filter_by_search(ads, query):
     """Filtrera annonser baserat på sökterm i titeln."""
@@ -191,6 +210,7 @@ def filter_by_search(ads, query):
         return ads
     q = query.lower().strip()
     return [ad for ad in ads if q in ad.get("heading", "").lower()]
+
 
 def render_score_badge(score):
     """Returnera HTML-badge baserat på trovärdighetspoäng."""
@@ -201,11 +221,42 @@ def render_score_badge(score):
     else:
         return f'<span class="badge-röd">{score}/10 🔴</span>'
 
+
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         ads = json.load(f)
 
-    # Filtrera på sökterm först
+    # --- New-ad detection: anything we haven't seen since the app started ---
+    if "seen_ad_ids" not in st.session_state:
+        st.session_state.seen_ad_ids = {ad.get("id") for ad in ads if ad.get("id")}
+    else:
+        current_ids = {ad.get("id") for ad in ads if ad.get("id")}
+        new_ids = current_ids - st.session_state.seen_ad_ids
+        if new_ids:
+            if "recent_new_ads" not in st.session_state:
+                st.session_state.recent_new_ads = []
+            for ad in ads:
+                if ad.get("id") in new_ids:
+                    score = ad.get("trust_score", 0)
+                    reasons = ad.get("trust_reasons", [])
+                    price_data = ad.get("price") or {}
+                    price = price_data.get("amount") if isinstance(price_data, dict) else price_data
+                    st.toast(
+                        f"🆕 New ad ({score}/10) — {ad.get('heading', '')[:60]}",
+                        icon="🚨" if score < 5 else ("⚠️" if score < 8 else "✅"),
+                    )
+                    notify_new_ad(ad, score, reasons)
+                    st.session_state.recent_new_ads.append(
+                        {
+                            "heading": ad.get("heading", "(no title)"),
+                            "price": price or "—",
+                            "score": score,
+                            "url": ad.get("canonical_url", ""),
+                        }
+                    )
+            st.session_state.seen_ad_ids = current_ids
+
+    # Filtrera på sökterm
     ads = filter_by_search(ads, sok_query)
 
     # Dela upp i trygga och misstänkta
