@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import json
 import os
@@ -7,30 +6,32 @@ from streamlit_autorefresh import st_autorefresh
 
 from notifier import notify_new_ad
 
-# Konfigurera sidan
-st.set_page_config(page_title="Smart Sök Blocket", page_icon="🛡️", layout="wide")
+# Configure the page
+
+st.set_page_config(page_title="Smart Search Blocket", page_icon="🛡️", layout="wide")
 
 # Auto-refresh every 10s — picks up new ads written by main_scanner.py
 st_autorefresh(interval=10_000, key="scanner_poll")
 
 # ──────────────────────────────────────────────────────────────
-# CSS för Blocket-stil (röd header, kort, badges, knappar)
+# CSS for Blocket style (red header, cards, badges, buttons)
 # ──────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
-    /* Dölj Streamlits standard-header */
+    /* Hide Streamlit's default header */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
 
-    /* Minska padding på toppen */
+    /* Reduce top padding */
     .block-container {
         padding-top: 1rem;
         padding-bottom: 2rem;
         max-width: 900px;
     }
 
-    /* Röd header-bar */
+    /* Red header bar  */
     .ss-header {
         background: #ed6347;
         padding: 16px 24px;
@@ -69,7 +70,7 @@ st.markdown("""
         border-radius: 12px;
     }
 
-    /* Innehållsruta under header */
+    /* Content box under header */
     .ss-body {
         background: #ffffff;
         padding: 20px 24px;
@@ -79,13 +80,13 @@ st.markdown("""
         margin-bottom: 24px;
     }
 
-    /* Grön Trovärdighet-knapp (badge) */
-    .ss-trovardighet-wrap {
+    /* Green Trustworthiness button (badge) */
+    .ss-trustworthiness-wrap {
         display: flex;
         justify-content: flex-end;
         margin: 12px 0;
     }
-    .ss-trovardighet {
+    .ss-trustworthiness {
         background: #2e7d32;
         color: #ffffff;
         padding: 8px 14px;
@@ -97,8 +98,8 @@ st.markdown("""
         gap: 7px;
     }
 
-    /* Trovärdighet-badges på annonskort */
-    .badge-grön {
+    /* Trustworthiness badges on ad cards */
+    .badge-green {
         background: #e8f5e9;
         color: #2e7d32;
         padding: 4px 10px;
@@ -107,7 +108,7 @@ st.markdown("""
         font-weight: 600;
         display: inline-block;
     }
-    .badge-gul {
+    .badge-yellow {
         background: #fff3e0;
         color: #e65100;
         padding: 4px 10px;
@@ -116,7 +117,7 @@ st.markdown("""
         font-weight: 600;
         display: inline-block;
     }
-    .badge-röd {
+    .badge-red {
         background: #ffebee;
         color: #c62828;
         padding: 4px 10px;
@@ -126,7 +127,7 @@ st.markdown("""
         display: inline-block;
     }
 
-    /* Sökruta - styla Streamlits input */
+    /* Search box - style Streamlit's input */
     .stTextInput > div > div > input {
         border: 1px solid #d0d0d0;
         border-radius: 6px;
@@ -134,7 +135,7 @@ st.markdown("""
         font-size: 14px;
     }
 
-    /* Röd Sök-knapp */
+    /* Red Search button */
     .stButton > button[kind="primary"] {
         background: #ed6347;
         color: white;
@@ -147,65 +148,73 @@ st.markdown("""
         color: white;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ──────────────────────────────────────────────────────────────
-# Röd header med sköld-logo
+# Red header with shield logo
 # ──────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div class="ss-header">
     <div class="ss-header-left">
         <div class="ss-logo">🛡️</div>
-        <span class="ss-title">Smart Sökning</span>
+        <span class="ss-title">Smart Search</span>
     </div>
     <span class="ss-live">⚡ Live</span>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ──────────────────────────────────────────────────────────────
-# Sökruta + Uppdatera-knapp
+# Search box + Refresh button
 # ──────────────────────────────────────────────────────────────
-col_sok, col_btn, col_refresh = st.columns([5, 1, 1])
-with col_sok:
-    sok_query = st.text_input(
-        "Sök",
+col_search, col_btn, col_refresh = st.columns([5, 1, 1])
+with col_search:
+    search_query = st.text_input(
+        "Search",
         value="",
-        placeholder="Sök efter t.ex. iPhone 13, MacBook, cykel...",
+        placeholder="Search for e.g. iPhone 13, MacBook, bike...",
         label_visibility="collapsed",
-        key="sok_input"
+        key="search_input",
     )
 with col_btn:
-    st.button("Sök", type="primary", use_container_width=True)
+    st.button("Search", type="primary", use_container_width=True)
 with col_refresh:
-    if st.button("🔄", help="Uppdatera resultat", use_container_width=True):
+    if st.button("🔄", help="Refresh results", use_container_width=True):
         st.rerun()
 
-# Grön Trovärdighet-indikator
-st.markdown("""
-<div class="ss-trovardighet-wrap">
-    <span class="ss-trovardighet">🛡️ Sorterat efter trovärdighet</span>
+# Green Trustworthiness indicator
+st.markdown(
+    """
+<div class="ss-trustworthiness-wrap">
+    <span class="ss-trustworthiness">🛡️ Sorted by Trustworthiness</span>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Persistent banner for recently detected new ads (toasts are ephemeral)
 if st.session_state.get("recent_new_ads"):
     with st.container(border=True):
-        st.markdown("### 🔔 Senast hittade nya annonser")
+        st.markdown("### 🔔 Latest new ads found")
         for entry in st.session_state["recent_new_ads"][-5:]:
             st.markdown(
                 f"- **{entry['heading']}** · {entry['price']} SEK · "
-                f"Trovärdighet: {entry['score']}/10 · "
-                f"[Öppna]({entry['url']})"
+                f"Trustworthiness: {entry['score']}/10 · "
+                f"[Open]({entry['url']})"
             )
 
 # ──────────────────────────────────────────────────────────────
-# Ladda annonser från JSON
+# # Load ads from JSON
 # ──────────────────────────────────────────────────────────────
 DATA_FILE = "data/live_ads.json"
 
 
 def filter_by_search(ads, query):
-    """Filtrera annonser baserat på sökterm i titeln."""
+    """Filter ads based on the search term in the title."""
     if not query.strip():
         return ads
     q = query.lower().strip()
@@ -213,13 +222,13 @@ def filter_by_search(ads, query):
 
 
 def render_score_badge(score):
-    """Returnera HTML-badge baserat på trovärdighetspoäng."""
+    """Return HTML badge based on trustworthiness score."""
     if score >= 8:
-        return f'<span class="badge-grön">{score}/10 🟢</span>'
+        return f'<span class="badge-green">{score}/10 🟢</span>'
     elif score >= 5:
-        return f'<span class="badge-gul">{score}/10 🟡</span>'
+        return f'<span class="badge-yellow">{score}/10 🟡</span>'
     else:
-        return f'<span class="badge-röd">{score}/10 🔴</span>'
+        return f'<span class="badge-red">{score}/10 🔴</span>'
 
 
 if os.path.exists(DATA_FILE):
@@ -240,7 +249,11 @@ if os.path.exists(DATA_FILE):
                     score = ad.get("trust_score", 0)
                     reasons = ad.get("trust_reasons", [])
                     price_data = ad.get("price") or {}
-                    price = price_data.get("amount") if isinstance(price_data, dict) else price_data
+                    price = (
+                        price_data.get("amount")
+                        if isinstance(price_data, dict)
+                        else price_data
+                    )
                     st.toast(
                         f"🆕 New ad ({score}/10) — {ad.get('heading', '')[:60]}",
                         icon="🚨" if score < 5 else ("⚠️" if score < 8 else "✅"),
@@ -256,20 +269,22 @@ if os.path.exists(DATA_FILE):
                     )
             st.session_state.seen_ad_ids = current_ids
 
-    # Filtrera på sökterm
-    ads = filter_by_search(ads, sok_query)
+    # Filter by search term
+    ads = filter_by_search(ads, search_query)
 
-    # Dela upp i trygga och misstänkta
-    good_ads = [ad for ad in ads if ad.get('trust_score', 0) >= 5]
-    suspicious_ads = [ad for ad in ads if ad.get('trust_score', 0) < 5]
+    # Split into safe and suspicious
+    good_ads = [ad for ad in ads if ad.get("trust_score", 0) >= 5]
+    suspicious_ads = [ad for ad in ads if ad.get("trust_score", 0) < 5]
 
-    # Sortera trygga annonser efter trust_score (högst först)
-    good_ads.sort(key=lambda x: x.get('trust_score', 0), reverse=True)
+    # Sort safe ads by trust_score (highest first)
+    good_ads.sort(key=lambda x: x.get("trust_score", 0), reverse=True)
 
-    # ── Misstänkta annonser ────────────────────────────────────
+    # ──  Suspicious ads  ────────────────────────────────────
     if len(suspicious_ads) > 0:
-        st.subheader("🚨 Varning: Misstänkta/Irrelevanta annonser")
-        st.warning("Dessa annonser har fått lågt trovärdighetsindex på grund av orimliga priser, saknad information eller felaktig kategori.")
+        st.subheader("🚨 Warning: Suspicious/Irrelevant ads")
+        st.warning(
+            "These ads received a low trustworthiness score because of unreasonable prices, missing information, or incorrect category."
+        )
 
         for ad in suspicious_ads[:3]:
             with st.container(border=True):
@@ -277,23 +292,27 @@ if os.path.exists(DATA_FILE):
                 with col1:
                     st.markdown(f"**[{ad.get('heading')}]({ad.get('canonical_url')})**")
                     price_data = ad.get("price")
-                    price = price_data.get("amount") if isinstance(price_data, dict) else "Saknas"
-                    st.write(f"Pris: {price} kr")
+                    price = (
+                        price_data.get("amount")
+                        if isinstance(price_data, dict)
+                        else "Missing"
+                    )
+                    st.write(f"Price: {price} SEK")
 
-                    with st.expander("🔍 Varför är denna misstänkt?"):
-                        for reason in ad.get('trust_reasons', []):
+                    with st.expander("🔍 Why is this suspicious?"):
+                        for reason in ad.get("trust_reasons", []):
                             st.write(f"- {reason}")
                 with col2:
-                    score = ad.get('trust_score', 0)
+                    score = ad.get("trust_score", 0)
                     st.markdown(render_score_badge(score), unsafe_allow_html=True)
 
         st.markdown("---")
 
-    # ── Trygga annonser ────────────────────────────────────────
-    st.subheader(f"✅ Relevanta & Trygga annonser ({len(good_ads)} st)")
+    # ── Safe ads ────────────────────────────────────────
+    st.subheader(f"✅ Relevant & Safe ads ({len(good_ads)} items)")
 
-    if len(good_ads) == 0 and sok_query.strip():
-        st.info(f"Inga trygga annonser matchar '{sok_query}'. Prova ett annat sökord.")
+    if len(good_ads) == 0 and search_query.strip():
+        st.info(f"No safe ads match '{search_query}'. Try another search term.")
 
     for ad in good_ads:
         with st.container(border=True):
@@ -302,16 +321,24 @@ if os.path.exists(DATA_FILE):
             with col1:
                 st.markdown(f"### [{ad.get('heading')}]({ad.get('canonical_url')})")
                 price_data = ad.get("price")
-                price = price_data.get("amount") if isinstance(price_data, dict) else "Saknas"
-                st.write(f"**Pris:** {price} kr | **Plats:** {ad.get('location', 'Okänd')}")
+                price = (
+                    price_data.get("amount")
+                    if isinstance(price_data, dict)
+                    else "Missing"
+                )
+                st.write(
+                    f"**Price:** {price} SEK | **Location:** {ad.get('location', 'Unknown')}"
+                )
 
-                with st.expander("🔍 Visa trovärdighetsanalys"):
-                    for reason in ad.get('trust_reasons', []):
+                with st.expander("🔍 Show trustworthiness analysis"):
+                    for reason in ad.get("trust_reasons", []):
                         st.write(f"- {reason}")
 
             with col2:
-                score = ad.get('trust_score', 0)
+                score = ad.get("trust_score", 0)
                 st.markdown(render_score_badge(score), unsafe_allow_html=True)
 
 else:
-    st.info("Väntar på att scannern ska hitta annonser... Kör din main_scanner.py i en annan terminal!")
+    st.info(
+        "Waiting for the scanner to find ads... Run your main_scanner.py in another terminal!"
+    )
