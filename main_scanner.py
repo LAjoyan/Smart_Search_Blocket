@@ -9,54 +9,54 @@ def start_continuous_scanner(query, avg_price):
     api = BlocketAPI()
     seen_ad_ids = set()
 
-    # NYTT 1: Skapa mappen 'data' om den inte redan finns
+    # Create the 'data' folder if it doesn't already exist
     os.makedirs("data", exist_ok=True)
 
-    # NYTT 2: En lista som sparar alla annonser vi har hittat
+    # A list that saves all ads we have found
     saved_ads = []
 
-    print(f"🚀 Startar övervakning för '{query}' var 30:e sekund...")
+    print(f"🚀 Starting monitoring for '{query}' every 30 seconds...")
 
     while True:
         try:
             results = api.search(query=query)
             ads_list = find_ads_list(results)
 
-            new_ads_found = False # Håller koll på om vi ska uppdatera filen
+            new_ads_found = False # Keeps track of whether we should update the file
 
             for ad in ads_list:
                 ad_id = ad.get("id")
 
-                # Om det är en HELT NY annons vi inte sett förut
+                # If it is a COMPLETELY NEW ad we haven't seen before
                 if ad_id and ad_id not in seen_ad_ids:
                     seen_ad_ids.add(ad_id)
-                    heading = ad.get("heading", "Okänd titel")
+                    heading = ad.get("heading", "Unknown title")
 
-                    # Analysera trovärdigheten
+                    # Analyze the trustworthiness
                     score, reasons = calculate_trust(ad, avg_price)
 
-                    # NYTT 3: Spara poängen och anledningarna inuti annonsens data
+                    # Save the score and the reasons inside the ad's data
                     ad['trust_score'] = score
                     ad['trust_reasons'] = reasons
 
-                    # Lägg till annonsen i vår "spar-lista"
+                    # Add the ad to our "save-list"
                     saved_ads.append(ad)
                     new_ads_found = True
 
-                    # Fortsätt printa i terminalen för säkerhets skull
-                    print(f"🚨 NY ANNONS: {heading} | Poäng: {score}/10")
 
-            # NYTT 4: Om vi hittade nya annonser, spara listan till json-filen!
+                    print(f"🚨 NEW AD: {heading} | Score: {score}/10")
+
+            # If we found new ads, save the list to the json file!
             if new_ads_found:
                 with open("data/live_ads.json", "w", encoding="utf-8") as f:
                     json.dump(saved_ads, f, indent=4, ensure_ascii=False)
-                print("💾 Sparade ny data till Streamlit (live_ads.json)!")
+                print("💾 Saved new data to Streamlit (live_ads.json)!")
 
-            # Pausa i 30 sekunder
+            # Pause for 30 seconds
             time.sleep(30)
 
         except Exception as e:
-            print(f"⚠️ Ett fel uppstod: {e}. Försöker igen om 30 sekunder...")
+            print(f"⚠️ An error occurred: {e}. Trying again in 30 seconds...")
             time.sleep(30)
 
 if __name__ == "__main__":
