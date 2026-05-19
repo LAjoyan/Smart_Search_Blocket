@@ -29,6 +29,7 @@ Since the system works in real-time, it is divided into two parts: a "background
 
 ### 1. Start the Scanner (Terminal 1)
 This starts the intelligent scanner which will ask you a few setup questions and then begin monitoring Blocket.
+
 ```bash
 uv run main_scanner.py
 ```
@@ -43,7 +44,7 @@ While the scanner is running in the background, open a new terminal tab and star
 uv run streamlit run app.py
 ```
 
-Your web browser will open automatically. Click on "🔄 Uppdate the result" when the scanner finds new listings!
+Your web browser will open automatically. Click on "🔄 Update the result" when the scanner finds new listings!
 
 ## 📁 Project Structure
 app.py - The Streamlit frontend application.
@@ -52,3 +53,9 @@ trust_score.py - Our trust score algorithm (1-10) and rule engine.
 fetcher.py / blocket_api.py - Integration with the Blocket API.
 data/live_ads.json - Our dynamic flat-file database.
 eda.ipynb - Jupyter Notebook for Exploratory Data Analysis.
+
+## Known Limitation
+
+Currently, the scanner is hardcoded to search for **"iPhone 13"**, so the app only shows results for that search term.
+
+In a future version, I plan to make the search query dynamic so users can search for any product directly from the Streamlit interface.
