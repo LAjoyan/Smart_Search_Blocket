@@ -1,16 +1,14 @@
-# trust_score.py
-
 from statistics import median
 
 from blocket_api import BlocketAPI, RecommerceAd
 
 SCAM_KEYWORDS = [
-    "swish först",
-    "betala först",
-    "utomlands",
-    "snabb affär",
-    "kontakt via mail",
-    "endast mail",
+    "swish first",
+    "pay first",
+    "abroad",
+    "quick deal",
+    "contact via email",
+    "email only",
     "western union",
 ]
 
