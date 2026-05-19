@@ -8,6 +8,7 @@ from rich.text import Text
 
 try:
     from plyer import notification
+
     PLYER_AVAILABLE = True
 except Exception:
     PLYER_AVAILABLE = False
@@ -15,6 +16,7 @@ except Exception:
 try:
     import streamlit as st
     from streamlit.runtime.scriptrunner import get_script_run_ctx
+
     STREAMLIT_AVAILABLE = True
 except Exception:
     STREAMLIT_AVAILABLE = False
@@ -109,7 +111,9 @@ def _popup_native(ad: dict, score: int) -> None:
         def _esc(s: str) -> str:
             return s.replace("\\", "\\\\").replace('"', '\\"')
 
-        script = f'display notification "{_esc(popup_msg)}" with title "{_esc(popup_title)}"'
+        script = (
+            f'display notification "{_esc(popup_msg)}" with title "{_esc(popup_title)}"'
+        )
         try:
             subprocess.run(["osascript", "-e", script], check=False, timeout=3)
             return

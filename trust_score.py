@@ -94,7 +94,9 @@ def calculate_trust(ad, avg_price, description=None):
         reasons.append(f"Location: {location}")
 
     # 7. Seller type
-    is_company = bool(ad.get("organisation_name")) or "retailer" in (ad.get("flags") or [])
+    is_company = bool(ad.get("organisation_name")) or "retailer" in (
+        ad.get("flags") or []
+    )
     if is_company:
         score += 1
         reasons.append("Company seller (verified business)")
@@ -110,7 +112,9 @@ def fetch_description(ad_id):
     api = BlocketAPI()
     try:
         full = api.get_ad(RecommerceAd(id=int(ad_id)))
-        return full["loaderData"]["item-recommerce"]["itemData"].get("description") or ""
+        return (
+            full["loaderData"]["item-recommerce"]["itemData"].get("description") or ""
+        )
     except Exception:
         return ""
 
