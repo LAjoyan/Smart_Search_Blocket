@@ -11,4 +11,5 @@ dependencies = [
     "plyer>=2.1.0",
     "rich>=15.0.0",
     "streamlit>=1.57.0",
+    "streamlit-autorefresh>=1.0.1",
 ]

@@ -4039,5 +4039,76 @@
             "Location: Järfälla",
             "Private seller"
         ]
+    },
+    {
+        "type": "bap",
+        "id": "23355657",
+        "main_search_key": "SEARCH_ID_BAP_ALL",
+        "heading": "iPhone 13 Pro - 256 GB - Grå - Grade B",
+        "location": "Stockholm",
+        "image": {
+            "url": "https://images.blocketcdn.se/dynamic/default/item/23355657/f5f23202-a104-4192-98c9-3bf94d8106da",
+            "path": "item/23355657/f5f23202-a104-4192-98c9-3bf94d8106da",
+            "height": -1,
+            "width": -1,
+            "aspect_ratio": 1
+        },
+        "flags": [
+            "retailer"
+        ],
+        "timestamp": 1779109222000,
+        "coordinates": {
+            "lat": 59.33081,
+            "lon": 18.05457,
+            "accuracy": 5
+        },
+        "ad_type": 67,
+        "labels": [
+            {
+                "id": "retailer",
+                "text": "Företag",
+                "type": "SECONDARY"
+            }
+        ],
+        "canonical_url": "https://www.blocket.se/recommerce/forsale/item/23355657",
+        "extras": [
+            {
+                "id": "memory_size",
+                "label": "",
+                "values": [
+                    "256 GB"
+                ]
+            },
+            {
+                "id": "brand",
+                "label": "",
+                "values": [
+                    "Apple"
+                ]
+            }
+        ],
+        "price": {
+            "amount": 4199,
+            "currency_code": "SEK",
+            "price_unit": "kr"
+        },
+        "organisation_name": "Blocket Nybegagnat",
+        "distance": 0,
+        "trade_type": "Säljes",
+        "image_urls": [
+            "https://images.blocketcdn.se/dynamic/default/item/23355657/f5f23202-a104-4192-98c9-3bf94d8106da"
+        ],
+        "brand": "Apple",
+        "memory_size": "256 GB",
+        "ad_id": 23355657,
+        "metadata": {
+            "source": "keyword"
+        },
+        "trust_score": 8,
+        "trust_reasons": [
+            "Reasonable price",
+            "Location: Stockholm",
+            "Company seller (verified business)"
+        ]
     }
 ]
