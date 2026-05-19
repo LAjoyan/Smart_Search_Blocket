@@ -2,60 +2,63 @@ import json
 import os
 from blocket_api import BlocketAPI
 
+
 def find_ads_list(data):
-    """Söker igenom API-svaret (rekursivt) för att hitta listan med annonser."""
+    """Searches through the API response (recursively) to find the list of ads."""
     if isinstance(data, list):
         return data
     if isinstance(data, dict):
-        # 1. Kolla om listan ligger i vanliga nyckelord
-        for key in ['data', 'items', 'ads', 'docs', 'search_results', 'hits']:
+        # 1. Check if the list is under common keywords
+        for key in ["data", "items", "ads", "docs", "search_results", "hits"]:
             if key in data and isinstance(data[key], list):
-                print(f"-> Hittade listan under nyckeln: '{key}'")
+                print(f"-> Found the list under the key: '{key}'")
                 return data[key]
 
-        # 2. Om inte, leta igenom alla nycklar för att se var det finns en lista
+        # 2. If not, search through all keys to see where there is a list
         for key, value in data.items():
             if isinstance(value, list) and len(value) > 0:
-                print(f"-> Hittade listan gömd under nyckeln: '{key}'")
+                print(f"-> Found the list hidden under the key: '{key}'")
                 return value
             elif isinstance(value, dict):
-                # Sök djupare om datan är nästlad
+                # Search deeper if the data is nested
                 deeper_list = find_ads_list(value)
                 if deeper_list:
                     return deeper_list
     return []
 
+
 def main():
     os.makedirs("data", exist_ok=True)
     api = BlocketAPI()
 
-    print("Hämtar annonser för 'iPhone 13'...")
+    print("Fetching ads for 'iPhone 13'...")
     try:
         results = api.search(query="iPhone 13")
 
-        # Printa för att se hur API-svaret ser ut
-        print(f"API-svaret är av typen: {type(results)}")
+        # Print to see what the API response looks like
+        print(f"The API response is of type: {type(results)}")
         if isinstance(results, dict):
-            print(f"API-svarets översta nycklar: {list(results.keys())}")
+            print(f"The API response's top-level keys: {list(results.keys())}")
 
-        # Kör vår smarta detektiv-funktion!
+        # Run our smart detective function!
         ads_list = find_ads_list(results)
 
         if not ads_list:
-            print("Kunde inte hitta listan med annonser. Sparar rådatan istället.")
+            print("Could not find the list of ads. Saving the raw data instead.")
             ads_list = results
         else:
-            print(f"✅ Perfekt! Hittade {len(ads_list)} riktiga annonser i datan.")
+            print(f"✅ Perfect! Found  {len(ads_list)} real ads in the data.")
 
-        # Spara ner till JSON
+        # Save to JSON
         file_path = "data/historical_ads.json"
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(ads_list, f, indent=4, ensure_ascii=False)
 
-        print(f"✅ Sparade ner datan till {file_path}")
+        print(f"✅ Saved the data to {file_path}")
 
     except Exception as e:
-        print(f"❌ Ett fel uppstod: {e}")
+        print(f"❌An error occurred:  {e}")
+
 
 if __name__ == "__main__":
     main()
