@@ -1,5 +1,3 @@
-# notifier.py
-
 import platform
 import subprocess
 import sys
