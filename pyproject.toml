@@ -1,7 +1,7 @@
 [project]
 name = "smart-search-blocket"
 version = "0.1.0"
-description = "Add your description here"
+description = "A smart assistant that monitors, filters, and scores Blocket ads in real-time."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
